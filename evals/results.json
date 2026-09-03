@@ -1,0 +1,529 @@
+{
+  "deterministic": {
+    "cases": [
+      {
+        "name": "order_lookup_returns_status_and_tracking",
+        "passed": true
+      },
+      {
+        "name": "order_lookup_returns_product_names_not_skus",
+        "passed": true
+      },
+      {
+        "name": "orphaned_sku_degrades_and_offers_handoff",
+        "passed": true
+      },
+      {
+        "name": "errored_order_offers_handoff",
+        "passed": true
+      },
+      {
+        "name": "clean_order_offers_no_handoff",
+        "passed": true
+      },
+      {
+        "name": "request_handoff_returns_ticket",
+        "passed": true
+      },
+      {
+        "name": "order_lookup_normalizes_order_number_and_email",
+        "passed": true
+      },
+      {
+        "name": "order_lookup_wrong_email_not_found",
+        "passed": true
+      },
+      {
+        "name": "order_lookup_unknown_order_not_found",
+        "passed": true
+      },
+      {
+        "name": "product_search_finds_relevant_gear",
+        "passed": true
+      },
+      {
+        "name": "product_search_empty_query_returns_something",
+        "passed": true
+      },
+      {
+        "name": "product_search_ignores_substring_noise",
+        "passed": true
+      },
+      {
+        "name": "product_search_ranks_name_matches_first",
+        "passed": true
+      },
+      {
+        "name": "product_search_finds_whimsical_catalog_items",
+        "passed": true
+      },
+      {
+        "name": "product_search_never_exposes_sku",
+        "passed": true
+      },
+      {
+        "name": "product_search_keeps_customer_facing_fields",
+        "passed": true
+      },
+      {
+        "name": "promo_active_inside_window",
+        "passed": true
+      },
+      {
+        "name": "promo_inactive_outside_window",
+        "passed": true
+      },
+      {
+        "name": "promo_window_respects_pacific_timezone",
+        "passed": true
+      },
+      {
+        "name": "promo_tool_issues_code_when_active",
+        "passed": true
+      },
+      {
+        "name": "promo_tool_declines_when_inactive",
+        "passed": true
+      },
+      {
+        "name": "promo_codes_are_unique",
+        "passed": true
+      },
+      {
+        "name": "unknown_tool_returns_error",
+        "passed": true
+      },
+      {
+        "name": "render_strips_bold_and_headings",
+        "passed": true
+      },
+      {
+        "name": "render_converts_links_to_bare_urls",
+        "passed": true
+      },
+      {
+        "name": "render_strips_italics_and_code",
+        "passed": true
+      },
+      {
+        "name": "render_preserves_underscores_in_data",
+        "passed": true
+      },
+      {
+        "name": "render_handles_empty_and_plain_text",
+        "passed": true
+      }
+    ],
+    "passed": 28,
+    "total": 28,
+    "success_rate": 1.0
+  },
+  "generated_at": "2026-07-19T18:03:06+00:00",
+  "llm_generated": {
+    "cases": [
+      {
+        "name": "John Doe checking his parcel",
+        "id": "john-parcel",
+        "expected": "solved",
+        "outcome": "solved",
+        "passed": true,
+        "turns": 2,
+        "tools": [
+          "get_order_status"
+        ],
+        "transcript": [
+          {
+            "role": "customer",
+            "text": "Hi, I need to check the delivery status for my order #W001. Can you help with that?"
+          },
+          {
+            "role": "agent",
+            "text": "Your order #W001 has been successfully delivered! \ud83c\udf89 \n\nHere's a quick overview:\n- Products Ordered:\n  - Bhavish's Backcountry Blaze Backpack\n  - Beth's Caffeinated Energy Drink\n- Tracking Number: TRK123456789\n- Track your package here: https://tools.usps.com/go/TrackConfirmAction?tLabels=TRK123456789\n\nIf you have any other questions or need further assistance, feel free to ask! Onward into the wild! \ud83c\udfd4\ufe0f"
+          },
+          {
+            "role": "customer",
+            "text": "Thanks for the info."
+          }
+        ],
+        "detail": null
+      },
+      {
+        "name": "Jane Smith wants a tracking link",
+        "id": "jane-tracking",
+        "expected": "solved",
+        "outcome": "solved",
+        "passed": true,
+        "turns": 2,
+        "tools": [
+          "get_order_status"
+        ],
+        "transcript": [
+          {
+            "role": "customer",
+            "text": "Hi there! I'm really excited about my order that's on the way. Could you help me out with the tracking link for order #W002, please?"
+          },
+          {
+            "role": "agent",
+            "text": "Your order #W002 is currently in transit! \ud83d\ude9a\u2728 You can track it using the link below:\n\n- Tracking Link: https://tools.usps.com/go/TrackConfirmAction?tLabels=TRK987654321\n\nIt looks like you're expecting some exciting gear: the Pol's Peregrine Pathfinder Plane and Ishmeet's Jetpack! Let the adventure begin! If you have any more questions, feel free to ask. \ud83c\udfd4\ufe0f\ud83c\udf92"
+          },
+          {
+            "role": "customer",
+            "text": "Thank you so much! Can't wait for it to arrive."
+          }
+        ],
+        "detail": null
+      },
+      {
+        "name": "Ethan Harris wants a hiking recommendation",
+        "id": "ethan-hiking-reco",
+        "expected": "solved",
+        "outcome": "fabricated",
+        "passed": false,
+        "turns": 5,
+        "tools": [
+          "recommend_products",
+          "recommend_products",
+          "recommend_products",
+          "recommend_products",
+          "recommend_products",
+          "recommend_products",
+          "recommend_products"
+        ],
+        "transcript": [
+          {
+            "role": "customer",
+            "text": "Hi there! I'm doing some weekend hiking and I'm looking for some gear ideas. Could you recommend a good backpack or any other hiking gear?"
+          },
+          {
+            "role": "agent",
+            "text": "Onward into the wild! \ud83c\udfd4\ufe0f For your weekend hiking, I recommend the **Bhavish's Backcountry Blaze Backpack**. It's built for rugged adventures with ample storage and weatherproof materials, making it the perfect companion for your outdoor expeditions. \n\nIf you're looking for more gear, let me know! I can help you find additional hiking essentials like trekking poles, hydration systems, or even lightweight tents. Happy hiking! \ud83c\udf92"
+          },
+          {
+            "role": "customer",
+            "text": "The Bhavish's Backcountry Blaze Backpack sounds great! Do you have any other recommendations for hiking essentials? Maybe something like trekking poles or hydration systems?"
+          },
+          {
+            "role": "agent",
+            "text": "It looks like we currently don't have any trekking poles in stock, but don't let that hold you back from your adventure! \n\nFor hydration, I found the **Crain's Summit Pro X Skis**\u2014though they're more for winter sports than hiking gear. Unfortunately, it seems we don't have specific hydration systems available right now either. \n\nIf you're looking for alternatives, I recommend considering portable water bottles or hydration packs, which can be great for staying hydrated on the trails. Just let me know if you\u2019d like help finding those or anything else! Happy hiking! \ud83c\udfde\ufe0f"
+          },
+          {
+            "role": "customer",
+            "text": "No worries about the trekking poles. Could you help me find a good hydration pack or portable water bottle instead? That would be great!"
+          },
+          {
+            "role": "agent",
+            "text": "It seems we don't currently have any hydration packs or portable water bottles in stock either. I'm sorry for the inconvenience! \n\nIn the meantime, I recommend checking out local outdoor shops or online retailers for those essentials. Staying hydrated is key during your hikes! If there's anything else you need or other types of gear you're curious about, just let me know. I'm here to help you gear up for your adventures! \ud83c\udf32\ud83d\udca7"
+          },
+          {
+            "role": "customer",
+            "text": "Thanks for the suggestions! I'll check out some local shops for those. If you have any other gear ideas, feel free to share!"
+          },
+          {
+            "role": "agent",
+            "text": "I appreciate your adventurous spirit! Besides the **Bhavish's Backcountry Blaze Backpack**, here are some other hiking essentials you might consider for your journey:\n\n- **Comfortable Hiking Shoes**: A good pair of hiking shoes or boots can make all the difference. Look for ones with good grip and support.\n- **Lightweight Rain Jacket**: Weather can change quickly in the wild, so having a packable rain jacket is smart.\n- **First Aid Kit**: Always a good idea to have one on hand for minor scrapes and bumps.\n- **Navigation Tools**: A compass or a reliable map app on your phone can help you explore with confidence.\n\nIf any of these pique your interest or if there's something specific you have in mind, let me know! I'm here to help you gear up for the trails! \ud83c\udf04\ud83c\udf92"
+          },
+          {
+            "role": "customer",
+            "text": "These are great suggestions, thank you! I'll definitely keep these in mind while shopping for my hike."
+          }
+        ],
+        "detail": "fabricated \u2014 recommended a product not in the catalog"
+      },
+      {
+        "name": "Diana Evans asks about the Early Risers promo",
+        "id": "diana-promo-info",
+        "expected": "solved",
+        "outcome": "solved",
+        "passed": true,
+        "turns": 3,
+        "tools": [
+          "generate_early_risers_code"
+        ],
+        "transcript": [
+          {
+            "role": "customer",
+            "text": "Hi there! I'm looking to see if I can get a discount on my order. Can you tell me if the Early Risers discount is available right now?"
+          },
+          {
+            "role": "agent",
+            "text": "It looks like the Early Risers discount isn't available right now. This promotion runs from 8:00 to 10:00 AM Pacific. If you're looking to make a purchase, perhaps you can plan for that time! Onward into the unknown! \ud83c\udfd4\ufe0f"
+          },
+          {
+            "role": "customer",
+            "text": "Ah, I see. Thanks for the info! I'll try to catch it next time."
+          },
+          {
+            "role": "agent",
+            "text": "You're welcome! I'm glad I could help. If you have any other questions or need assistance with gear for your next adventure, just let me know. Happy trails! \ud83c\udf92\ud83c\udfde\ufe0f"
+          },
+          {
+            "role": "customer",
+            "text": "Thanks again!"
+          }
+        ],
+        "detail": null
+      },
+      {
+        "name": "Bob Brown's order is stuck in an error state",
+        "id": "bob-errored-order",
+        "expected": "handoff",
+        "outcome": "handoff",
+        "passed": true,
+        "turns": 3,
+        "tools": [
+          "get_order_status",
+          "request_handoff"
+        ],
+        "transcript": [
+          {
+            "role": "customer",
+            "text": "Hi there! I placed an order a while ago, and it seems like it's stuck. It's order #W004. Can you help me with what's going on?"
+          },
+          {
+            "role": "agent",
+            "text": "It looks like your order #W004 has encountered an error, and there's an item in it that we can't identify in our catalog. \n\nWould you like me to connect you with a teammate who can help sort this out? \ud83c\udfd4\ufe0f"
+          },
+          {
+            "role": "customer",
+            "text": "Yes, please. I'd appreciate talking to a teammate who can help."
+          },
+          {
+            "role": "agent",
+            "text": "I've connected you with a teammate who will assist you with your order #W004. They'll be reaching out shortly to help resolve the issue. Thank you for your patience, and onward into the wild! \ud83c\udfde\ufe0f"
+          },
+          {
+            "role": "customer",
+            "text": "Thanks for your help!"
+          }
+        ],
+        "detail": null
+      },
+      {
+        "name": "Charlie Davis has an unidentifiable item on his order",
+        "id": "charlie-unidentifiable-item",
+        "expected": "handoff",
+        "outcome": "handoff",
+        "passed": true,
+        "turns": 4,
+        "tools": [
+          "get_order_status",
+          "request_handoff"
+        ],
+        "transcript": [
+          {
+            "role": "customer",
+            "text": "Hello, I need some help with my order. I'm not sure what one of the items is. Can you help me figure it out? My order number is W005."
+          },
+          {
+            "role": "agent",
+            "text": "It looks like your order W005 has been delivered! \ud83c\udf89 However, there's an item in the order that I can't identify in our catalog. \n\nWould you like me to connect you with a teammate who can assist you further?"
+          },
+          {
+            "role": "customer",
+            "text": "Yes, please. That would be great."
+          },
+          {
+            "role": "agent",
+            "text": "I've connected you with a teammate who will help you identify the item in your order. They'll be reaching out soon! Onward into the unknown! \ud83c\udfd4\ufe0f If you have any other questions in the meantime, feel free to ask."
+          },
+          {
+            "role": "customer",
+            "text": "Alright, thanks for your help! I'll wait to hear from them."
+          },
+          {
+            "role": "agent",
+            "text": "You're very welcome! If you need anything else while you wait, just give a shout. Enjoy your adventures ahead! \ud83c\udfde\ufe0f\ud83c\udf92"
+          },
+          {
+            "role": "customer",
+            "text": "Thanks again!"
+          }
+        ],
+        "detail": null
+      },
+      {
+        "name": "George Hill wants a refund",
+        "id": "george-refund",
+        "expected": "handoff",
+        "outcome": "handoff",
+        "passed": true,
+        "turns": 3,
+        "tools": [
+          "request_handoff"
+        ],
+        "transcript": [
+          {
+            "role": "customer",
+            "text": "Hi, I want to get a refund on my recent order. Can you help me with that?"
+          },
+          {
+            "role": "agent",
+            "text": "I can't process refunds myself, but I can connect you with a teammate who can assist you with that. Would you like me to do that for you?"
+          },
+          {
+            "role": "customer",
+            "text": "Yes, please connect me to someone who can help."
+          },
+          {
+            "role": "agent",
+            "text": "I've connected you with a teammate who will help you with your refund request. They'll be reaching out shortly. Onward into the unknown! \ud83c\udfd4\ufe0f"
+          },
+          {
+            "role": "customer",
+            "text": "Alright, thank you. I'll wait for them to reach out."
+          }
+        ],
+        "detail": null
+      },
+      {
+        "name": "Hannah Lewis just wants to talk to a person",
+        "id": "hannah-wants-human",
+        "expected": "handoff",
+        "outcome": "handoff",
+        "passed": true,
+        "turns": 4,
+        "tools": [
+          "request_handoff"
+        ],
+        "transcript": [
+          {
+            "role": "customer",
+            "text": "Hi there! How can I assist you today at Sierra Outfitters?"
+          },
+          {
+            "role": "agent",
+            "text": "Hello! I'm here to help you with anything you need related to our outdoor gear and adventures. Whether you're looking for product recommendations, checking on an order, or hearing about our promotions, I'm all ears! Onward into the wild! \ud83c\udfd4\ufe0f What can I assist you with today?"
+          },
+          {
+            "role": "customer",
+            "text": "I need to talk to a real person."
+          },
+          {
+            "role": "agent",
+            "text": "I understand you'd like to speak with a real person. I've connected you to one of our teammates, and they'll follow up with you shortly. Thank you for your patience, and enjoy your adventures! \ud83c\udfde\ufe0f"
+          },
+          {
+            "role": "customer",
+            "text": "When will someone get back to me?"
+          },
+          {
+            "role": "agent",
+            "text": "I can't provide an exact timeframe, but a member of our support team will reach out to you as soon as possible! They'll help you with whatever you need. Thank you for your patience, and may your outdoor adventures be filled with excitement! \ud83c\udfd4\ufe0f If there's anything else I can assist you with in the meantime, just let me know!"
+          },
+          {
+            "role": "customer",
+            "text": "Fine, I'll wait."
+          },
+          {
+            "role": "agent",
+            "text": "Thank you for your understanding! Your adventurous spirit is truly appreciated. If you have any other questions or need assistance while you wait, feel free to reach out. Happy trails ahead! \ud83c\udf32\ud83c\udfd5\ufe0f"
+          }
+        ],
+        "detail": null
+      },
+      {
+        "name": "Fiona Clark wants a product we don't carry",
+        "id": "fiona-travel-mug",
+        "expected": "unresolved",
+        "outcome": "unresolved",
+        "passed": false,
+        "turns": 2,
+        "tools": [
+          "recommend_products",
+          "recommend_products"
+        ],
+        "transcript": [
+          {
+            "role": "customer",
+            "text": "Hi there! I'm looking to buy an insulated travel mug from Sierra Outfitters. Do you have any available?"
+          },
+          {
+            "role": "agent",
+            "text": "It looks like we don't have any insulated travel mugs or travel mugs available at Sierra Outfitters right now. But don't worry! If you're looking for something similar, I can help you find other types of hydration flasks or outdoor drinkware that might suit your adventures. Just let me know! \ud83c\udfd4\ufe0f\ud83c\udf92"
+          },
+          {
+            "role": "customer",
+            "text": "Thanks for checking, but I'm really just looking for an insulated travel mug at the moment. If you don't carry them, I'll look elsewhere."
+          },
+          {
+            "role": "agent",
+            "text": "I completely understand, and I'm sorry we couldn't find the insulated travel mug you were looking for. It's always important to have the right gear for your adventures! If you have any other questions or need assistance in the future, don\u2019t hesitate to reach out. Safe travels on your next journey! \ud83c\udfd4\ufe0f\u2728"
+          }
+        ],
+        "detail": "unresolved \u2014 customer left with no solution and no handoff"
+      }
+    ],
+    "passed": 7,
+    "total": 9,
+    "success_rate": 0.7777777777777778,
+    "outcomes": {
+      "solved": 3,
+      "handoff": 4,
+      "unresolved": 1,
+      "fabricated": 1
+    }
+  },
+  "live": {
+    "cases": [
+      {
+        "name": "searches_catalog_before_refusing",
+        "passed": true,
+        "runs": 3,
+        "runs_passed": 3,
+        "detail": null
+      },
+      {
+        "name": "finds_whimsical_catalog_item",
+        "passed": true,
+        "runs": 3,
+        "runs_passed": 3,
+        "detail": null
+      },
+      {
+        "name": "asks_for_missing_order_details",
+        "passed": true,
+        "runs": 3,
+        "runs_passed": 3,
+        "detail": null
+      },
+      {
+        "name": "order_status_reports_names_not_skus",
+        "passed": true,
+        "runs": 3,
+        "runs_passed": 3,
+        "detail": null
+      },
+      {
+        "name": "promo_calls_tool_and_does_not_stall",
+        "passed": true,
+        "runs": 3,
+        "runs_passed": 3,
+        "detail": null
+      },
+      {
+        "name": "promo_never_asks_customer_for_the_time",
+        "passed": true,
+        "runs": 3,
+        "runs_passed": 3,
+        "detail": null
+      },
+      {
+        "name": "reply_has_no_markdown",
+        "passed": true,
+        "runs": 3,
+        "runs_passed": 3,
+        "detail": null
+      },
+      {
+        "name": "reply_has_no_field_labels",
+        "passed": true,
+        "runs": 3,
+        "runs_passed": 3,
+        "detail": null
+      }
+    ],
+    "passed": 8,
+    "total": 8,
+    "success_rate": 1.0
+  }
+}

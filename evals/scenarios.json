@@ -1,0 +1,74 @@
+[
+  {
+    "id": "john-parcel",
+    "name": "John Doe checking his parcel",
+    "identity": "john.doe@example.com",
+    "persona": "A busy, mildly impatient customer who just wants a quick answer.",
+    "goal": "Find out the delivery status and tracking for your order #W001.",
+    "expected_outcome": "solved"
+  },
+  {
+    "id": "jane-tracking",
+    "name": "Jane Smith wants a tracking link",
+    "identity": "jane.smith@example.com",
+    "persona": "A polite customer who is excited about an order on the way.",
+    "goal": "Get the tracking link for your in-transit order #W002.",
+    "expected_outcome": "solved"
+  },
+  {
+    "id": "ethan-hiking-reco",
+    "name": "Ethan Harris wants a hiking recommendation",
+    "identity": "ethan.harris@example.com",
+    "persona": "A weekend hiker looking for gear ideas, open to suggestions.",
+    "goal": "Get a recommendation for a good backpack or hiking gear.",
+    "expected_outcome": "solved"
+  },
+  {
+    "id": "diana-promo-info",
+    "name": "Diana Evans asks about the Early Risers promo",
+    "identity": "diana.evans@example.com",
+    "persona": "A deal-seeker who wants to know if a discount is available right now.",
+    "goal": "Find out whether you can get the Early Risers discount at the moment. You are satisfied once the agent tells you clearly whether you qualify.",
+    "expected_outcome": "solved"
+  },
+  {
+    "id": "bob-errored-order",
+    "name": "Bob Brown's order is stuck in an error state",
+    "identity": "bob.brown@example.com",
+    "persona": "A worried customer whose order seems stuck. You are happy to be connected to a human if the agent offers.",
+    "goal": "Find out what is wrong with your order #W004. If the agent offers to connect you with a teammate, accept.",
+    "expected_outcome": "handoff"
+  },
+  {
+    "id": "charlie-unidentifiable-item",
+    "name": "Charlie Davis has an unidentifiable item on his order",
+    "identity": "charlie.davis@example.com",
+    "persona": "A confused customer who can't tell what one of the items on the order is. You accept help from a human if offered.",
+    "goal": "Understand every item on your order #W005. If the agent offers a handoff to a teammate, accept it.",
+    "expected_outcome": "handoff"
+  },
+  {
+    "id": "george-refund",
+    "name": "George Hill wants a refund",
+    "identity": "george.hill@example.com",
+    "persona": "A dissatisfied customer who wants their money back. You accept being connected to a human.",
+    "goal": "Get a refund on your order. If the agent says it can't do that itself and offers a teammate, accept.",
+    "expected_outcome": "handoff"
+  },
+  {
+    "id": "hannah-wants-human",
+    "name": "Hannah Lewis just wants to talk to a person",
+    "identity": "hannah.lewis@example.com",
+    "persona": "An impatient customer who does not want to deal with a bot.",
+    "goal": "Get connected to a real human support agent as directly as possible.",
+    "expected_outcome": "handoff"
+  },
+  {
+    "id": "fiona-travel-mug",
+    "name": "Fiona Clark wants a product we don't carry",
+    "identity": "fiona.clark@example.com",
+    "persona": "A shopper set on buying an insulated travel mug, a product Sierra Outfitters does not sell. You are not interested in unrelated alternatives and will give up if they don't have it.",
+    "goal": "Buy an insulated travel mug. Give up if the agent confirms they don't carry one.",
+    "expected_outcome": "unresolved"
+  }
+]

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Eval Dashboard · Sierra Agent</title>
+<style>
+  :root {
+    --bg: #f4f1ea; --panel: #ffffff; --ink: #26312b; --muted: #6b7a70;
+    --pine: #2f6b4f; --pine-dark: #244f3b; --border: #dcd7cb; --track: #e7e3d9;
+    --good: #2e7d46; --info: #2f6fb0; --warn: #c07d17; --bad: #b23b3b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #171b18; --panel: #1f2621; --ink: #e7ece8; --muted: #9fb0a5;
+      --pine: #57a97d; --pine-dark: #3c7f5b; --border: #333c36; --track: #2a322c;
+      --good: #46b06a; --info: #5b9bd8; --warn: #d69a3a; --bad: #d66a6a;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #171b18; --panel: #1f2621; --ink: #e7ece8; --muted: #9fb0a5;
+    --pine: #57a97d; --pine-dark: #3c7f5b; --border: #333c36; --track: #2a322c;
+    --good: #46b06a; --info: #5b9bd8; --warn: #d69a3a; --bad: #d66a6a;
+  }
+  :root[data-theme="light"] {
+    --bg: #f4f1ea; --panel: #ffffff; --ink: #26312b; --muted: #6b7a70;
+    --pine: #2f6b4f; --pine-dark: #244f3b; --border: #dcd7cb; --track: #e7e3d9;
+    --good: #2e7d46; --info: #2f6fb0; --warn: #c07d17; --bad: #b23b3b;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 24px 20px 60px; }
+  header.top {
+    display: flex; justify-content: space-between; align-items: baseline;
+    flex-wrap: wrap; gap: 8px; margin-bottom: 4px;
+  }
+  header.top h1 { font-size: 1.4rem; margin: 0; }
+  header.top a { color: var(--pine); font-size: .85rem; text-decoration: none; }
+  .stamp { color: var(--muted); font-size: .82rem; margin-bottom: 22px; }
+
+  .kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 30px; }
+  @media (max-width: 620px) { .kpis { grid-template-columns: 1fr; } }
+  .tile {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 18px;
+  }
+  .tile .label { font-size: .78rem; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+  .tile .rate { font-size: 2rem; font-weight: 700; margin: 4px 0 2px; }
+  .tile .count { font-size: .82rem; color: var(--muted); }
+  .meter { height: 8px; border-radius: 999px; background: var(--track); margin-top: 12px; overflow: hidden; }
+  .meter > span { display: block; height: 100%; border-radius: 999px; }
+
+  section.cat { margin-bottom: 34px; }
+  section.cat h2 { font-size: 1.1rem; margin: 0 0 4px; }
+  section.cat .sub { color: var(--muted); font-size: .84rem; margin: 0 0 14px; }
+
+  .cases { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: var(--panel); }
+  .case { display: flex; align-items: flex-start; gap: 10px; padding: 9px 14px; border-top: 1px solid var(--border); font-size: .9rem; }
+  .case:first-child { border-top: none; }
+  .case .dot { flex: none; width: 18px; height: 18px; border-radius: 50%; color: #fff; font-size: .72rem; display: grid; place-items: center; margin-top: 1px; }
+  .dot.pass { background: var(--good); }
+  .dot.fail { background: var(--bad); }
+  .case .body { flex: 1; min-width: 0; }
+  .case .name { font-weight: 600; }
+  .case .meta { color: var(--muted); font-size: .8rem; }
+  .case .detail { color: var(--bad); font-size: .8rem; white-space: pre-wrap; word-break: break-word; margin-top: 3px; font-family: ui-monospace, monospace; }
+
+  .breakdown { margin: 0 0 16px; }
+  .bar { display: flex; height: 26px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+  .bar > span { display: flex; align-items: center; justify-content: center; color: #fff; font-size: .74rem; font-weight: 600; }
+  .seg-solved { background: var(--good); }
+  .seg-handoff { background: var(--info); }
+  .seg-unresolved { background: var(--warn); }
+  .seg-fabricated { background: var(--bad); }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 8px; font-size: .8rem; color: var(--muted); }
+  .legend .k { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .sw { width: 11px; height: 11px; border-radius: 3px; }
+
+  details.tx { margin-top: 6px; }
+  details.tx summary { cursor: pointer; color: var(--pine); font-size: .8rem; }
+  .turn { margin: 6px 0; font-size: .84rem; }
+  .turn .who { font-weight: 600; }
+  .turn.customer .who { color: var(--info); }
+  .turn.agent .who { color: var(--pine); }
+  .badge { display: inline-block; font-size: .72rem; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); }
+  .badge.match { color: var(--good); border-color: var(--good); }
+  .badge.miss { color: var(--bad); border-color: var(--bad); }
+  .empty { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 30px; text-align: center; color: var(--muted); }
+  code { background: var(--track); padding: 1px 5px; border-radius: 5px; font-size: .85em; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="top">
+      <h1>Eval Dashboard 🏔️</h1>
+      <a href="/">← back to agent</a>
+    </header>
+    <div class="stamp" id="stamp"></div>
+    <div id="root"></div>
+  </div>
+
+<script>
+  const CAT_META = {
+    deterministic: { title: "Deterministic", sub: "Structural checks on the tool/store/render layer — no API calls." },
+    live: { title: "Live behavioral", sub: "Fixed prompts against the real model; each case run N times." },
+    llm_generated: { title: "LLM-generated scenarios", sub: "A simulated customer converses with the agent; outcome vs. expected." },
+  };
+
+  const esc = (s) => (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const pct = (r) => Math.round((r || 0) * 100);
+  const rateColor = (r) => (r >= 1 ? "var(--good)" : r >= 0.5 ? "var(--warn)" : "var(--bad)");
+
+  function tile(key, s) {
+    if (!s) return "";
+    return `<div class="tile">
+      <div class="label">${CAT_META[key].title}</div>
+      <div class="rate" style="color:${rateColor(s.success_rate)}">${pct(s.success_rate)}%</div>
+      <div class="count">${s.passed}/${s.total} passed</div>
+      <div class="meter"><span style="width:${pct(s.success_rate)}%;background:${rateColor(s.success_rate)}"></span></div>
+    </div>`;
+  }
+
+  function caseRow(c) {
+    const cls = c.passed ? "pass" : "fail";
+    const mark = c.passed ? "✓" : "✕";
+    let meta = "";
+    if (c.runs) meta = `${c.runs_passed}/${c.runs} runs`;
+    if (c.expected) meta = `expected ${c.expected} → got ${c.outcome} · ${c.turns} turns`;
+    let extra = "";
+    if (!c.passed && c.detail) extra = `<div class="detail">${esc(c.detail)}</div>`;
+    if (c.transcript) extra += transcript(c);
+    return `<div class="case">
+      <div class="dot ${cls}">${mark}</div>
+      <div class="body">
+        <div class="name">${esc(c.name)}</div>
+        ${meta ? `<div class="meta">${esc(meta)}</div>` : ""}
+        ${extra}
+      </div>
+    </div>`;
+  }
+
+  function transcript(c) {
+    const turns = (c.transcript || []).map((t) =>
+      `<div class="turn ${t.role}"><span class="who">${t.role === "agent" ? "Agent" : "Customer"}:</span> ${esc(t.text)}</div>`
+    ).join("");
+    return `<details class="tx"><summary>transcript (${c.turns} turns)</summary>${turns}</details>`;
+  }
+
+  function breakdown(o) {
+    const total = (o.solved || 0) + (o.handoff || 0) + (o.unresolved || 0) + (o.fabricated || 0);
+    if (!total) return "";
+    const seg = (n, cls) => n ? `<span class="${cls}" style="width:${(n/total)*100}%" title="${n}">${n}</span>` : "";
+    return `<div class="breakdown">
+      <div class="bar">
+        ${seg(o.solved, "seg-solved")}${seg(o.handoff, "seg-handoff")}${seg(o.unresolved, "seg-unresolved")}${seg(o.fabricated, "seg-fabricated")}
+      </div>
+      <div class="legend">
+        <span class="k"><span class="sw" style="background:var(--good)"></span>Solved ${o.solved || 0}</span>
+        <span class="k"><span class="sw" style="background:var(--info)"></span>Handoff ${o.handoff || 0} <em style="font-style:italic">(correct escalation, not a failure)</em></span>
+        <span class="k"><span class="sw" style="background:var(--warn)"></span>Unresolved ${o.unresolved || 0}</span>
+        <span class="k"><span class="sw" style="background:var(--bad)"></span>Fabricated ${o.fabricated || 0} <em style="font-style:italic">(recommended a product we don't carry)</em></span>
+      </div>
+    </div>`;
+  }
+
+  function section(key, s) {
+    if (!s) return "";
+    const meta = CAT_META[key];
+    const bd = s.outcomes ? breakdown(s.outcomes) : "";
+    const rows = s.cases.map(caseRow).join("");
+    return `<section class="cat">
+      <h2>${meta.title} — <span style="color:${rateColor(s.success_rate)}">${pct(s.success_rate)}%</span></h2>
+      <p class="sub">${meta.sub}</p>
+      ${bd}
+      <div class="cases">${rows}</div>
+    </section>`;
+  }
+
+  fetch("/dashboard/data").then((r) => r.json()).then((data) => {
+    const root = document.getElementById("root");
+    if (data.missing) {
+      document.getElementById("stamp").textContent = "";
+      root.innerHTML = `<div class="empty">No results yet. Run <code>python3 -m evals</code> to generate them.</div>`;
+      return;
+    }
+    const when = data.generated_at ? new Date(data.generated_at).toLocaleString() : "unknown";
+    document.getElementById("stamp").textContent = "Last run: " + when + " · this is a snapshot, not live";
+    const order = ["deterministic", "live", "llm_generated"];
+    root.innerHTML =
+      `<div class="kpis">${order.map((k) => tile(k, data[k])).join("")}</div>` +
+      order.map((k) => section(k, data[k])).join("");
+  }).catch(() => {
+    document.getElementById("root").innerHTML = `<div class="empty">Couldn't load results.</div>`;
+  });
+</script>
+</body>
+</html>
