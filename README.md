@@ -1,9 +1,10 @@
 # Sierra Outfitters Agent 🏔️
 
-A chat agent for Sierra Outfitters, built from scratch on the OpenAI API (no
-agent frameworks). It handles **order status & tracking**, **product
-recommendations**, and the **Early Risers promotion**. Runs as a terminal REPL
-or a browser UI with a stub login — both drive the same agent core.
+A chat agent for Sierra Outfitters, built from scratch on the OpenAI SDK (no
+agent frameworks) — pointed at any OpenAI-compatible provider, Groq by default.
+It handles **order status & tracking**, **product recommendations**, and the
+**Early Risers promotion**. Runs as a terminal REPL or a browser UI with a stub
+login — both drive the same agent core.
 
 ## Setup
 
@@ -13,7 +14,7 @@ Use `python3` to create the virtual environment:
 python3 -m venv .venv        # one-time; creates the .venv/ folder
 source .venv/bin/activate    # activate it — your prompt shows (.venv)
 pip install -r requirements.txt
-cp .env.example .env         # then paste your OPENAI_API_KEY into .env
+cp .env.example .env         # then paste your Groq key into LLM_API_KEY
 ```
 
 The datasets ship pre-populated in `data/CustomerOrders.json` (Appendix A) and
@@ -80,8 +81,9 @@ ask for missing details — rather than grading prose with an LLM judge. Cases r
 times and report run counts (`3/3`) to surface flakiness.
 
 **LLM-generated scenarios** (real API, multi-turn). A simulated customer — a
-second ChatGPT client on the same key, with a persona and a goal — converses with
-the agent, and each conversation is classified **solved / handoff / unresolved**
+second model client on the same provider/key, with a persona and a goal —
+converses with the agent, and each conversation is classified
+**solved / handoff / unresolved**
 from the tool trace plus a ground-truth check (no LLM judge). A scenario passes
 when the outcome matches its `expected_outcome`. The catalog lives in
 `evals/scenarios.json` (e.g. "John Doe checking his parcel"); add a persona + goal
@@ -118,13 +120,15 @@ user input → model → (tool call?) → run local tool → feed result back �
 ```
 
 - `agent/loop.py` — the read/reason/act loop and message history.
+- `agent/validator.py` — a one-token model call that rejects out-of-scope
+  prompts before the main agent runs.
 - `agent/tools.py` — a `ToolRegistry`: JSON schemas the model sees + the local
   functions they map to. Adding a capability is one method + one schema.
 - `agent/stores.py` — `OrderStore` / `ProductCatalog`, a thin data layer over
   the JSON so storage stays swappable.
 - `agent/promo.py` — Early Risers time-window + code generation.
 - `agent/prompts.py` — Sierra brand voice and behavioural rules.
-- `agent/client.py` — OpenAI client + model config.
+- `agent/client.py` — LLM client + model config (provider via `LLM_BASE_URL`).
 - `web/` — a Flask front end (`server.py`) + pages (`login.html`, `index.html`)
   that call the same `run_turn()` the CLI does. The browser is just another I/O
   channel; the agent package is untouched.

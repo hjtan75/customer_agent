@@ -1,7 +1,7 @@
 """LLM-generated scenario evals: a simulated customer converses with the agent.
 
 Unlike the live evals (fixed prompts, PASS/FAIL on one invariant), these are
-multi-turn and exploratory. A second ChatGPT client — same OpenAI key, its own
+multi-turn and exploratory. A second model client — same provider/key, its own
 system prompt and history — role-plays a customer with a GOAL and reacts to the
 agent's replies. We then measure how the conversation ended.
 
@@ -18,9 +18,10 @@ Outcome taxonomy per conversation:
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
-from agent.client import build_client
+from agent.client import MODEL, build_client
 from agent.loop import run_turn
 from agent.prompts import authenticated_prompt
 from agent.stores import OrderStore, ProductCatalog
@@ -30,7 +31,9 @@ DATA = Path(__file__).resolve().parent.parent / "data"
 SCENARIOS_PATH = Path(__file__).resolve().parent / "scenarios.json"
 
 
-CUSTOMER_MODEL = "gpt-4o"
+# The simulated customer. Defaults to the same model the agent uses (Groq's
+# Llama 3.3 70B); override with LLM_CUSTOMER_MODEL to role-play with a different one.
+CUSTOMER_MODEL = os.environ.get("LLM_CUSTOMER_MODEL", MODEL)
 MAX_TURNS = 8
 GOAL_MET = "[GOAL_MET]"
 GIVE_UP = "[GIVING_UP]"

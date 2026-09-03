@@ -31,6 +31,7 @@ from agent.loop import run_turn
 from agent.prompts import authenticated_greeting, authenticated_prompt
 from agent.stores import OrderStore, ProductCatalog
 from agent.tools import ToolRegistry
+from agent.validator import validate_prompt
 
 DATA_DIR = Path(__file__).parent.parent / "data"
 EVALS_DIR = Path(__file__).parent.parent / "evals"
@@ -167,6 +168,12 @@ def chat():
     user_input = ((request.json or {}).get("message") or "").strip()
     if not user_input:
         return jsonify({"reply": "", "tools": []})
+
+    # Scope check before the main agent runs. An out-of-scope prompt is answered
+    # here and never enters the session's message history.
+    rejection = validate_prompt(client, user_input)
+    if rejection is not None:
+        return jsonify({"reply": rejection, "tools": []})
 
     state = _state_for(email)
     messages = state["messages"]

@@ -27,6 +27,7 @@ from agent.prompts import SYSTEM_PROMPT
 from agent.render import to_terminal
 from agent.stores import OrderStore, ProductCatalog
 from agent.tools import ToolRegistry
+from agent.validator import is_in_scope
 
 DATA = Path(__file__).resolve().parent.parent / "data"
 
@@ -126,7 +127,26 @@ def reply_has_no_field_labels():
         assert label not in reply, f"dumped raw field {label!r}: {reply}"
 
 
+def validator_rejects_unrelated_prompt():
+    """The scope filter must turn away a general-knowledge question."""
+    assert is_in_scope(client(), "What is the quickest way to get to Alaska?") is False
+    assert is_in_scope(client(), "Write me a Python function to sort a list.") is False
+
+
+def validator_allows_support_prompts():
+    """In-scope questions -- including whimsical catalog items -- must pass."""
+    for prompt in (
+        "Where is my order #W001?",
+        "Do you sell an invisibility cloak?",
+        "Can I get the Early Risers discount?",
+        "I need to talk to a human about a refund.",
+    ):
+        assert is_in_scope(client(), prompt) is True, prompt
+
+
 LIVE_CASES = [
+    validator_rejects_unrelated_prompt,
+    validator_allows_support_prompts,
     searches_catalog_before_refusing,
     finds_whimsical_catalog_item,
     asks_for_missing_order_details,

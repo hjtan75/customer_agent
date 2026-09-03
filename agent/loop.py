@@ -13,6 +13,7 @@ from .client import MODEL, build_client
 from .prompts import authenticated_greeting, authenticated_prompt
 from .render import to_terminal
 from .tools import ToolRegistry
+from .validator import validate_prompt
 
 # Guard against a pathological loop of tool calls in a single turn.
 MAX_TOOL_ROUNDS = 5
@@ -43,7 +44,6 @@ def run_turn(client, registry: ToolRegistry, messages: list[dict]) -> str:
         # print(f"Message to the model {messages}")
         for call in message.tool_calls:
             result = registry.run(call.function.name, call.function.arguments)
-            print(f"Tool called, returned: {result}")
             messages.append(
                 {
                     "role": "tool",
@@ -104,6 +104,13 @@ def chat_loop(orders_path: str | Path, catalog_path: str | Path) -> None:
             print("\nOnward into the unknown! 🏔️")
             return
         if not user_input:
+            continue
+
+        # Scope check before the main agent runs. An out-of-scope prompt is
+        # answered here and never enters the message history.
+        rejection = validate_prompt(client, user_input)
+        if rejection is not None:
+            print(f"\nSierra: {to_terminal(rejection)}")
             continue
 
         messages.append({"role": "user", "content": user_input})

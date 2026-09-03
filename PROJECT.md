@@ -1,11 +1,12 @@
 # Sierra Outfitters Agent — Project Reference 🏔️
 
 A chat agent for **Sierra Outfitters** (an outdoor retailer), built from scratch
-on the OpenAI chat-completions API with **no agent frameworks** — just a message
-history, a hand-rolled tool registry, and a dispatch loop. It runs as a terminal
-REPL or a browser UI (Flask), both driving the same agent core. This document is
-the durable reference for how the project is structured, why, and how to run and
-extend it.
+on the OpenAI chat-completions **SDK** with **no agent frameworks** — just a
+message history, a hand-rolled tool registry, and a dispatch loop. The SDK points
+at any OpenAI-compatible provider (**Groq by default**, via `LLM_BASE_URL` /
+`LLM_MODEL`). It runs as a terminal REPL or a browser UI (Flask), both driving
+the same agent core. This document is the durable reference for how the project
+is structured, why, and how to run and extend it.
 
 ---
 
@@ -41,7 +42,7 @@ account.
 ```bash
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env          # then paste your OPENAI_API_KEY into .env
+cp .env.example .env          # then paste your Groq key into LLM_API_KEY
 python main.py                # terminal: sign in (any customer email + '1234'), 'quit' to exit
 python3 -m web                # web UI on http://127.0.0.1:8000 (login page first)
 ```
@@ -59,7 +60,7 @@ Sign in as any customer from `data/CustomerOrders.json` (e.g.
 user input
    │
    ▼
-main.py ──► agent/loop.py ──► OpenAI chat API
+main.py ──► agent/loop.py ──► LLM chat API (OpenAI-compatible; Groq default)
                   │                  │
                   │           (tool call?)
                   │                  │
@@ -82,13 +83,14 @@ model returns a plain text reply.
 |------|----------------|
 | `main.py` | Entry point; wires data paths into the chat loop. |
 | `agent/loop.py` | Read/reason/act loop, message history, tool-round guard, CLI login. |
+| `agent/validator.py` | Prompt-validation layer: a one-token model call that rejects out-of-scope prompts before the main agent runs. |
 | `agent/tools.py` | `ToolRegistry`: JSON schemas the model sees + local handlers. |
 | `agent/stores.py` | `OrderStore` / `ProductCatalog` — thin data layer over JSON. |
 | `agent/auth.py` | Stub login (`check_login`), shared by CLI and web. |
 | `agent/promo.py` | Early Risers time-window check + code generation. |
 | `agent/render.py` | Strips markdown from model output for plain-terminal display. |
 | `agent/prompts.py` | Brand voice + behavioral rules; authenticated prompt/greeting variants. |
-| `agent/client.py` | OpenAI client construction + model selection. |
+| `agent/client.py` | LLM client construction + model/provider selection (`LLM_*` env vars; Groq default). |
 | `web/server.py` | Flask app: login, sessions, `/chat`, `/dashboard`, over the same `run_turn`. |
 | `web/*.html` | Login page, chat UI, eval dashboard (self-contained). |
 | `evals/__main__.py` | Unified runner (deterministic + live + llm); writes `results.json`. |
@@ -105,6 +107,14 @@ model returns a plain text reply.
   resolved in *code*, not the prompt. The model only phrases the tool's result,
   so it cannot invent an order, fabricate a product, or hand out a discount at
   the wrong hour. This is the core safety property.
+
+- **Scope is checked before the agent, by a separate model.** `validator.py`
+  runs one cheap, one-token classification call on each user turn *before*
+  `run_turn`. Out-of-scope prompts ("what's the quickest way to get to Alaska")
+  get a fixed reply and never enter the message history. A model, not keywords,
+  because "warm gear for a trip to Alaska" and "how do I get to Alaska" share
+  every keyword. It fails open: a validator error or an unrecognised answer lets
+  the turn through, so a flaky classifier can't lock a customer out.
 
 - **The extensibility seam is the tool registry.** Adding a capability =
   one handler method + one JSON schema + one entry in the `_handlers` dict.
@@ -251,7 +261,7 @@ API — use `--deterministic` for a free, hermetic run.
 ### Deterministic eval harness (`python -m evals --deterministic`)
 
 A dependency-free harness in `evals/` asserts on the tool/store/promo layer with
-**no OpenAI calls**, so it's fast, free, and stable enough to be a CI gate (it
+**no LLM calls**, so it's fast, free, and stable enough to be a CI gate (it
 exits non-zero on any failure). 28 cases cover:
 
 - order lookup returns the right status + tracking link
