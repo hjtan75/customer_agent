@@ -1,4 +1,4 @@
-"""Flask web UI for the Sierra Outfitters agent, with a stub login.
+"""Flask web UI for the Summit Outfitters agent, with a stub login.
 
 A thin presentation layer over the same agent core the CLI uses. The browser is
 just another I/O channel: this server holds the OpenAI client, the message
@@ -40,7 +40,7 @@ HERE = Path(__file__).parent
 app = Flask(__name__)
 # Signs the session cookie. A dev default is fine here; a real deployment would
 # set SECRET_KEY from the environment.
-app.secret_key = os.environ.get("SECRET_KEY", "sierra-dev-secret-change-me")
+app.secret_key = os.environ.get("SECRET_KEY", "summit-dev-secret-change-me")
 
 # Stores are read-only and shared across sessions; load once.
 client = build_client()

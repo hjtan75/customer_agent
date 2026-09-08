@@ -67,7 +67,7 @@ class OrderStore:
 
 
 class ProductCatalog:
-    """The Sierra Outfitters product catalogue."""
+    """The Summit Outfitters product catalogue."""
 
     def __init__(self, path: str | Path):
         self._products = json.loads(Path(path).read_text())

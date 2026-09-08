@@ -1,4 +1,4 @@
-"""Entrypoint for the Sierra Outfitters agent chat loop.
+"""Entrypoint for the Summit Outfitters agent chat loop.
 
 Usage:
     python main.py

@@ -105,7 +105,7 @@ class ToolRegistry:
                 "function": {
                     "name": "recommend_products",
                     "description": (
-                        "Search the Sierra Outfitters catalogue for products "
+                        "Search the Summit Outfitters catalogue for products "
                         "matching a customer's need or query."
                     ),
                     "parameters": {

@@ -67,7 +67,7 @@
     "id": "fiona-travel-mug",
     "name": "Fiona Clark wants a product we don't carry",
     "identity": "fiona.clark@example.com",
-    "persona": "A shopper set on buying an insulated travel mug, a product Sierra Outfitters does not sell. You are not interested in unrelated alternatives and will give up if they don't have it.",
+    "persona": "A shopper set on buying an insulated travel mug, a product Summit Outfitters does not sell. You are not interested in unrelated alternatives and will give up if they don't have it.",
     "goal": "Buy an insulated travel mug. Give up if the agent confirms they don't carry one.",
     "expected_outcome": "unresolved"
   }

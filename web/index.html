@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Sierra Outfitters 🏔️</title>
+<title>Summit Outfitters 🏔️</title>
 <style>
   :root {
     --bg: #f4f1ea;
@@ -126,7 +126,7 @@
   <div class="app">
     <header>
       <div>
-        <div class="brand">Sierra Agent</div>
+        <div class="brand">Summit Agent</div>
         <div class="who" id="who"></div>
       </div>
       <div class="actions">
@@ -271,9 +271,9 @@
       if (res.status === 401) { window.location = "/login"; return; }
       const data = await res.json();
       if (data.email) document.getElementById("who").textContent = "Signed in as " + data.email;
-      addRow("bot", renderMarkdown(data.greeting || "Welcome to Sierra Outfitters! 🏔️"));
+      addRow("bot", renderMarkdown(data.greeting || "Welcome to Summit Outfitters! 🏔️"));
     } catch (e) {
-      addRow("bot", "Welcome to Sierra Outfitters! 🏔️");
+      addRow("bot", "Welcome to Summit Outfitters! 🏔️");
     }
     input.focus();
   }

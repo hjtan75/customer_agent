@@ -62,7 +62,7 @@ def _login(orders) -> str | None:
     password "1234". Signing in here is what binds the agent to an identity, so
     the CLI never has to ask for an email mid-conversation either.
     """
-    print("🏔️  Sierra Outfitters — please sign in. (type 'quit' to exit)")
+    print("🏔️  Summit Outfitters — please sign in. (type 'quit' to exit)")
     while True:
         try:
             email = input("Email: ").strip()
@@ -110,11 +110,11 @@ def chat_loop(orders_path: str | Path, catalog_path: str | Path) -> None:
         # answered here and never enters the message history.
         rejection = validate_prompt(client, user_input)
         if rejection is not None:
-            print(f"\nSierra: {to_terminal(rejection)}")
+            print(f"\nSummit: {to_terminal(rejection)}")
             continue
 
         messages.append({"role": "user", "content": user_input})
         reply = run_turn(client, registry, messages)
         # Render only at the display boundary — the message history keeps the
         # model's original text so its own context stays consistent.
-        print(f"\nSierra: {to_terminal(reply)}")
+        print(f"\nSummit: {to_terminal(reply)}")

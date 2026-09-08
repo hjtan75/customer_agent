@@ -1,6 +1,6 @@
-# Sierra Outfitters Agent 🏔️
+# Summit Outfitters Agent 🏔️
 
-A chat agent for Sierra Outfitters, built from scratch on the OpenAI SDK (no
+A chat agent for Summit Outfitters, built from scratch on the OpenAI SDK (no
 agent frameworks) — pointed at any OpenAI-compatible provider, Groq by default.
 It handles **order status & tracking**, **product recommendations**, and the
 **Early Risers promotion**. Runs as a terminal REPL or a browser UI with a stub
@@ -113,21 +113,31 @@ you don't need to recreate the venv or reinstall dependencies.
 
 ## How it works
 
-The agent is a plain chat loop with hand-rolled tool dispatch:
+The agent is a plain chat loop with hand-rolled tool dispatch, fronted by a
+scope check:
 
 ```
-user input → model → (tool call?) → run local tool → feed result back → reply
+user input → scope check → model → (tool call?) → run local tool → feed result back → reply
+                  │
+              out of scope → "Your prompt is out of scope." (agent never runs)
 ```
 
 - `agent/loop.py` — the read/reason/act loop and message history.
-- `agent/validator.py` — a one-token model call that rejects out-of-scope
-  prompts before the main agent runs.
+- `agent/validator.py` — **the prompt-validation agent.** Before every turn, a
+  separate one-word LLM call (`IN_SCOPE` / `OUT_OF_SCOPE`) decides whether the
+  message is a Summit Outfitters support question. Out-of-scope prompts ("what's
+  the quickest way to get to Alaska") get a fixed reply and never reach the agent
+  or the message history; in-scope ones pass straight through. A model rather
+  than keywords, because "warm gear for Alaska" and "how to get to Alaska" look
+  identical to a keyword rule. It **fails open** — any error or unrecognised
+  answer lets the turn through, so a flaky classifier can't block a real
+  customer. See `PROJECT.md` for the full write-up.
 - `agent/tools.py` — a `ToolRegistry`: JSON schemas the model sees + the local
   functions they map to. Adding a capability is one method + one schema.
 - `agent/stores.py` — `OrderStore` / `ProductCatalog`, a thin data layer over
   the JSON so storage stays swappable.
 - `agent/promo.py` — Early Risers time-window + code generation.
-- `agent/prompts.py` — Sierra brand voice and behavioural rules.
+- `agent/prompts.py` — Summit brand voice and behavioural rules.
 - `agent/client.py` — LLM client + model config (provider via `LLM_BASE_URL`).
 - `web/` — a Flask front end (`server.py`) + pages (`login.html`, `index.html`)
   that call the same `run_turn()` the CLI does. The browser is just another I/O
@@ -139,6 +149,10 @@ user input → model → (tool call?) → run local tool → feed result back �
   order lookups, product data, current Pacific time, promo eligibility — is
   resolved in code. The model only phrases results, so it can't invent an order
   or hand out a discount at the wrong hour.
+- **A separate model guards scope, before the agent runs.** A one-token
+  `IN_SCOPE` / `OUT_OF_SCOPE` classification call turns away off-topic prompts up
+  front, keeping them out of the agent and its history. Fails open so it can
+  never lock a customer out.
 - **The model asks for missing info** (email + order number) rather than a
   hard-coded form flow — cleaner conversation design and easy to extend. In the
   web UI the session is authenticated, so the email is dropped from the tool

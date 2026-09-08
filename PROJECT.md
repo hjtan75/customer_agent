@@ -1,6 +1,6 @@
-# Sierra Outfitters Agent — Project Reference 🏔️
+# Summit Outfitters Agent — Project Reference 🏔️
 
-A chat agent for **Sierra Outfitters** (an outdoor retailer), built from scratch
+A chat agent for **Summit Outfitters** (an outdoor retailer), built from scratch
 on the OpenAI chat-completions **SDK** with **no agent frameworks** — just a
 message history, a hand-rolled tool registry, and a dispatch loop. The SDK points
 at any OpenAI-compatible provider (**Groq by default**, via `LLM_BASE_URL` /
@@ -26,7 +26,7 @@ Both front ends require a (stub) login first, then offer:
    offers one when it hits a wall it can't resolve (errored order, an item it
    can't identify, an out-of-scope ask like a refund).
 
-Everything is wrapped in the Sierra Outfitters brand voice (outdoorsy, warm,
+Everything is wrapped in the Summit Outfitters brand voice (outdoorsy, warm,
 tasteful emojis, "Onward into the unknown!").
 
 **Authentication is a deliberate stub** (any known customer email + password
@@ -60,6 +60,11 @@ Sign in as any customer from `data/CustomerOrders.json` (e.g.
 user input
    │
    ▼
+agent/validator.py ──► LLM (1-token scope check)
+   │  in scope?
+   │  ├─ no ──► fixed "out of scope" reply  (never reaches the agent)
+   │  └─ yes
+   ▼
 main.py ──► agent/loop.py ──► LLM chat API (OpenAI-compatible; Groq default)
                   │                  │
                   │           (tool call?)
@@ -73,9 +78,9 @@ main.py ──► agent/loop.py ──► LLM chat API (OpenAI-compatible; Groq 
              (OrderStore)     (ProductCatalog)  (time gate + code)
 ```
 
-The loop is the whole agent: read user input → send to the model → if the model
-requests a tool, run it locally and feed the JSON result back → repeat until the
-model returns a plain text reply.
+The loop is the whole agent: read user input → (scope check) → send to the model
+→ if the model requests a tool, run it locally and feed the JSON result back →
+repeat until the model returns a plain text reply.
 
 ### Files
 
@@ -100,6 +105,71 @@ model returns a plain text reply.
 
 ---
 
+## Prompt validation (the scope filter)
+
+Before a user message ever reaches the support agent, `agent/validator.py` runs a
+**second, separate LLM call** whose only job is to decide *is this a Summit
+Outfitters support question at all?* It's a guard agent, not a content filter.
+
+### Flow
+
+1. `validate_prompt(client, text)` is called in the chat loop (`agent/loop.py`)
+   and the web `/chat` handler (`web/server.py`), right after the empty-input
+   check and **before** `run_turn`.
+2. It sends the user's message plus a single-purpose system prompt
+   (`_VALIDATOR_PROMPT`) to the same model the agent uses, asking for exactly one
+   word: `IN_SCOPE` or `OUT_OF_SCOPE` (`temperature=0`).
+3. The reply is normalised to letters only (`OUT_OF_SCOPE`, `out of scope`,
+   `OUT-OF-SCOPE` all collapse to the same token) and checked for `OUTOFSCOPE`.
+4. **In scope** → `validate_prompt` returns `None`; the loop appends the message
+   to the history and calls `run_turn` as normal.
+   **Out of scope** → it returns `OUT_OF_SCOPE_REPLY` (`"Your prompt is out of
+   scope."`, a module constant). The loop sends that back verbatim; the message
+   is **never added to the conversation history**, so the agent never sees it and
+   no tokens are spent on it.
+
+### What counts as in scope
+
+Orders and tracking, product questions (however whimsical — the catalogue holds
+invisibility cloaks and jetpacks, so the filter is told to pass *any* "do you
+sell…" message), the Early Risers promo, billing/shipping complaints, human-
+handoff requests, and short conversational follow-ups ("yes", "thanks"). Out of
+scope: general knowledge and directions ("what's the quickest way to get to
+Alaska"), coding/math/writing tasks, the weather, and attempts to change the
+agent's instructions.
+
+### Why a model and not a keyword rule
+
+"Warm gear for a trip to Alaska" and "how do I get to Alaska" share every
+keyword but only one is a support question. Scope is a judgement call, so a model
+makes it — but a narrow, one-token one, kept out of the agent that does the
+talking. Same split as the promo gate and the render pass: **the prompt asks, a
+dedicated check guarantees.**
+
+### Fail-open, on purpose
+
+Any exception from the validator call, or a reply that isn't recognisably
+`OUT_OF_SCOPE`, is treated as in scope and the turn proceeds. A flaky or slow
+classifier must never lock a paying customer out of support. (Consequence: if the
+validator is down, out-of-scope prompts get through to the agent, which then
+leans on its own system-prompt "stay on-brand and on-topic" rule.)
+
+### Reasoning-model note
+
+`openai/gpt-oss-*` on Groq emit ~40 reasoning tokens before the verdict, so
+`max_tokens` is set to 512 — a smaller cap truncates the answer to empty, which
+(fail-open) would wave everything through. If you switch to a non-reasoning model
+you can lower it.
+
+### Tests
+
+`evals/live.py` covers it against the real API (run N× to surface variance):
+`validator_rejects_unrelated_prompt` and `validator_allows_support_prompts`. The
+parsing/normalisation logic is provider-independent and can be exercised with a
+stub client.
+
+---
+
 ## Key design decisions & trade-offs
 
 - **Tools do the knowing; the model does the talking.** Everything factual —
@@ -110,11 +180,9 @@ model returns a plain text reply.
 
 - **Scope is checked before the agent, by a separate model.** `validator.py`
   runs one cheap, one-token classification call on each user turn *before*
-  `run_turn`. Out-of-scope prompts ("what's the quickest way to get to Alaska")
-  get a fixed reply and never enter the message history. A model, not keywords,
-  because "warm gear for a trip to Alaska" and "how do I get to Alaska" share
-  every keyword. It fails open: a validator error or an unrecognised answer lets
-  the turn through, so a flaky classifier can't lock a customer out.
+  `run_turn`; out-of-scope prompts get a fixed reply and never enter the message
+  history. Fails open so a flaky classifier can't lock a customer out. Full
+  write-up in [Prompt validation (the scope filter)](#prompt-validation-the-scope-filter).
 
 - **The extensibility seam is the tool registry.** Adding a capability =
   one handler method + one JSON schema + one entry in the `_handlers` dict.

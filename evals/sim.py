@@ -38,7 +38,7 @@ MAX_TURNS = 8
 GOAL_MET = "[GOAL_MET]"
 GIVE_UP = "[GIVING_UP]"
 
-CUSTOMER_SYSTEM = """You are role-playing a CUSTOMER contacting Sierra Outfitters \
+CUSTOMER_SYSTEM = """You are role-playing a CUSTOMER contacting Summit Outfitters \
 support by chat. Stay in character as the customer at all times — never act as \
 the support agent, and never break character.
 
@@ -102,7 +102,7 @@ def _tools_called(agent_messages: list[dict]) -> list[str]:
 
 
 # Products the model tends to invent for outdoor queries but that are NOT in the
-# Sierra catalog. A recommendation that names any of these is fabricating, so it
+# Summit catalog. A recommendation that names any of these is fabricating, so it
 # can't count as a genuine "solve" no matter how satisfied the customer sounds.
 # This is the crude denylist version of the §1.6 "only real products" check; the
 # robust version matches product-like nouns in the reply against real ProductNames.

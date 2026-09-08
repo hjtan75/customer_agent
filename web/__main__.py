@@ -14,6 +14,6 @@ HOST = "127.0.0.1"
 PORT = 8000
 
 if __name__ == "__main__":
-    print(f"Sierra Outfitters is live at http://{HOST}:{PORT}  🏔️")
+    print(f"Summit Outfitters is live at http://{HOST}:{PORT}  🏔️")
     print("Press Ctrl+C to stop.")
     app.run(host=HOST, port=PORT, debug=False)

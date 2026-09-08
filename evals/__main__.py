@@ -413,7 +413,7 @@ def _write_results(sections: dict) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="python -m evals", description="Sierra Outfitters agent evals."
+        prog="python -m evals", description="Summit Outfitters agent evals."
     )
     parser.add_argument("--deterministic", action="store_true",
                         help="run only the deterministic evals (no API calls)")

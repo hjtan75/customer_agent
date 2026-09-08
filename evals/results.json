@@ -388,7 +388,7 @@
         "transcript": [
           {
             "role": "customer",
-            "text": "Hi there! How can I assist you today at Sierra Outfitters?"
+            "text": "Hi there! How can I assist you today at Summit Outfitters?"
           },
           {
             "role": "agent",
@@ -435,11 +435,11 @@
         "transcript": [
           {
             "role": "customer",
-            "text": "Hi there! I'm looking to buy an insulated travel mug from Sierra Outfitters. Do you have any available?"
+            "text": "Hi there! I'm looking to buy an insulated travel mug from Summit Outfitters. Do you have any available?"
           },
           {
             "role": "agent",
-            "text": "It looks like we don't have any insulated travel mugs or travel mugs available at Sierra Outfitters right now. But don't worry! If you're looking for something similar, I can help you find other types of hydration flasks or outdoor drinkware that might suit your adventures. Just let me know! \ud83c\udfd4\ufe0f\ud83c\udf92"
+            "text": "It looks like we don't have any insulated travel mugs or travel mugs available at Summit Outfitters right now. But don't worry! If you're looking for something similar, I can help you find other types of hydration flasks or outdoor drinkware that might suit your adventures. Just let me know! \ud83c\udfd4\ufe0f\ud83c\udf92"
           },
           {
             "role": "customer",
