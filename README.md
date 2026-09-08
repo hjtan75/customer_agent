@@ -43,15 +43,6 @@ python3 -m web                # starts a local server on http://127.0.0.1:8000
 Open http://127.0.0.1:8000 and sign in as any customer from
 `data/CustomerOrders.json` (e.g. `john.doe@example.com`) with password `1234`.
 
-Signed in, the agent already knows your email (it never asks), you can ask "what
-orders do I have?" to list them, and you can only ever see your **own** orders —
-identity is held server-side and stamped into every order lookup, so the model
-can't be talked into reading another account. The login is a deliberate stub; the
-authorization boundary is the real part (see `IMPROVEMENT.md` §2.2).
-
-> Uses port 8000, not Flask's default 5000, which macOS reserves for the AirPlay
-> Receiver.
-
 ## Tests / evals
 
 Three layers, from cheapest and most certain to richest and most exploratory.
